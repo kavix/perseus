@@ -195,8 +195,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       animation: _glowAnimation,
                       builder: (context, child) {
                         return Container(
-                          width: 150,
-                          height: 150,
+                          width: 200,
+                          height: 200,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             boxShadow: [
