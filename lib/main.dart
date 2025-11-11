@@ -231,9 +231,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                 ),
                               ],
                             ),
-                            child: Container
-                              (
-                              color: Colors.black12,
+                            child: Padding(
                               padding: const EdgeInsets.all(20),
                               child: Image.asset(
                                 'assets/images/logo.png',
