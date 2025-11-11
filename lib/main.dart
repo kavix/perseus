@@ -28,10 +28,18 @@ class MyApp extends StatelessWidget {
       title: 'MEDUSA CTF',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF39FF14), // Neon green
+        colorScheme: const ColorScheme(
           brightness: Brightness.dark,
+          primary: Color(0xFF08CB00),
+          onPrimary: Color(0xFF000000),
+          secondary: Color(0xFF253900),
+          onSecondary: Color(0xFFEEEEEE),
+          error: Colors.red,
+          onError: Color(0xFF000000),
+          surface: Color(0xFF000000),
+          onSurface: Color(0xFFEEEEEE),
         ),
+        scaffoldBackgroundColor: const Color(0xFF000000),
         useMaterial3: true,
       ),
       home: const LoginPage(),
@@ -185,9 +193,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF0F172A),
-              Color(0xFF1E293B),
-              Color(0xFF334155),
+              Color(0xFF000000),
+              Color(0xFF253900),
+              Color(0xFF000000),
             ],
           ),
         ),
@@ -217,7 +225,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             decoration: BoxDecoration(
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF39FF14).withValues(alpha: (_glowAnimation.value * 0.5).clamp(0,1)),
+                                  color: const Color(0xFF08CB00).withValues(alpha: (_glowAnimation.value * 0.5).clamp(0,1)),
                                   blurRadius: 30,
                                   spreadRadius: 10,
                                 ),
@@ -246,7 +254,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF39FF14),
+                        color: Color(0xFF08CB00),
                         letterSpacing: 1.5,
                       ),
                       textAlign: TextAlign.center,
@@ -259,7 +267,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       'In ancient myth, Medusa\'s gaze turned warriors to stone.\nOnly the worthy may pass...',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white70,
+                        color: Color(0xFFEEEEEE),
                         height: 1.5,
                       ),
                       textAlign: TextAlign.center,
@@ -278,7 +286,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       child: const Text(
                         'Read the Legend',
                         style: TextStyle(
-                          color: Color(0xFF39FF14),
+                          color: Color(0xFF08CB00),
                           decoration: TextDecoration.underline,
                         ),
                       ),
@@ -296,18 +304,18 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                           TextFormField(
                             controller: _usernameController,
                             textInputAction: TextInputAction.next,
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Color(0xFFEEEEEE)),
                             decoration: InputDecoration(
                               labelText: 'Divine Name',
                               hintText: 'Enter your immortal name...',
                               hintStyle: const TextStyle(color: Colors.white30),
-                              labelStyle: const TextStyle(color: Color(0xFF39FF14)),
+                              labelStyle: const TextStyle(color: Color(0xFF08CB00)),
                               enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Color(0xFF39FF14)),
+                                borderSide: const BorderSide(color: Color(0xFF08CB00)),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Color(0xFF39FF14), width: 2),
+                                borderSide: const BorderSide(color: Color(0xFF08CB00), width: 2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               errorBorder: OutlineInputBorder(
@@ -318,7 +326,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                 borderSide: const BorderSide(color: Colors.red, width: 2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              prefixIcon: const Icon(Icons.person, color: Color(0xFF39FF14)),
+                              prefixIcon: const Icon(Icons.person, color: Color(0xFF08CB00)),
                             ),
                             autofillHints: const [AutofillHints.username],
                             onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
@@ -337,18 +345,18 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             controller: _passwordController,
                             obscureText: _obscurePassword,
                             textInputAction: TextInputAction.done,
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Color(0xFFEEEEEE)),
                             decoration: InputDecoration(
                               labelText: 'Sacred Key',
                               hintText: 'Speak your secret words...',
                               hintStyle: const TextStyle(color: Colors.white30),
-                              labelStyle: const TextStyle(color: Color(0xFF39FF14)),
+                              labelStyle: const TextStyle(color: Color(0xFF08CB00)),
                               enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Color(0xFF39FF14)),
+                                borderSide: const BorderSide(color: Color(0xFF08CB00)),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Color(0xFF39FF14), width: 2),
+                                borderSide: const BorderSide(color: Color(0xFF08CB00), width: 2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               errorBorder: OutlineInputBorder(
@@ -359,12 +367,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                 borderSide: const BorderSide(color: Colors.red, width: 2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              prefixIcon: const Icon(Icons.lock, color: Color(0xFF39FF14)),
+                              prefixIcon: const Icon(Icons.lock, color: Color(0xFF08CB00)),
                               suffixIcon: IconButton(
                                 onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                                 icon: Icon(
                                   _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                                  color: const Color(0xFF39FF14),
+                                  color: const Color(0xFF08CB00),
                                 ),
                                 tooltip: _obscurePassword ? 'Show key' : 'Hide key',
                               ),
@@ -404,7 +412,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                               },
                               child: const Text(
                                 'Forgot the Sacred Key?',
-                                style: TextStyle(color: Color(0xFF39FF14)),
+                                style: TextStyle(color: Color(0xFF08CB00)),
                               ),
                             ),
                           ),
@@ -452,14 +460,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                 gradient: LinearGradient(
                                   colors: _isLoading
                                       ? [Colors.grey, Colors.grey.shade800]
-                                      : [const Color(0xFF39FF14), const Color(0xFF2ECC11)],
+                                      : [const Color(0xFF08CB00), const Color(0xFF253900)],
                                 ),
                                 borderRadius: BorderRadius.circular(8),
                                 boxShadow: [
                                   BoxShadow(
                                     color: _isLoading 
                                         ? Colors.transparent 
-                                        : const Color(0xFF39FF14).withValues(alpha: 0.3),
+                                        : const Color(0xFF08CB00).withValues(alpha: 0.3),
                                     blurRadius: 10,
                                     spreadRadius: 2,
                                   ),
@@ -479,7 +487,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                         width: 24,
                                         height: 24,
                                         child: CircularProgressIndicator(
-                                          color: Colors.white,
+                                          color: Color(0xFFEEEEEE),
                                           strokeWidth: 2,
                                         ),
                                       )
@@ -488,7 +496,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.black,
+                                          color: Color(0xFF000000),
                                           letterSpacing: 1.2,
                                         ),
                                       ),
@@ -561,9 +569,9 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF0F172A),
-              Color(0xFF1E293B),
-              Color(0xFF334155),
+              Color(0xFF000000),
+              Color(0xFF253900),
+              Color(0xFF000000),
             ],
           ),
         ),
@@ -585,10 +593,10 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                             height: 120,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: const Color(0xFF39FF14).withValues(alpha: 0.2),
+                              color: const Color(0xFF08CB00).withValues(alpha: 0.25),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF39FF14).withValues(alpha: 0.5),
+                                  color: const Color(0xFF08CB00).withValues(alpha: 0.55),
                                   blurRadius: 30,
                                   spreadRadius: 10,
                                 ),
@@ -597,7 +605,7 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                             child: const Icon(
                               Icons.check,
                               size: 80,
-                              color: Color(0xFF39FF14),
+                              color: Color(0xFF08CB00),
                             ),
                           ),
                         ),
@@ -611,7 +619,7 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                                 style: TextStyle(
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF39FF14),
+                                  color: Color(0xFF08CB00),
                                   letterSpacing: 1.5,
                                 ),
                               ),
@@ -620,7 +628,7 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                                 'The immortals have spoken. You are worthy...',
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.white70,
+                                  color: Color(0xFFEEEEEE),
                                   fontStyle: FontStyle.italic,
                                 ),
                                 textAlign: TextAlign.center,
@@ -632,12 +640,12 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                                   color: const Color.fromRGBO(0, 0, 0, 0.5),
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
-                                    color: const Color(0xFF39FF14),
+                                    color: const Color(0xFF08CB00),
                                     width: 2,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF39FF14).withValues(alpha: 0.3),
+                                      color: const Color(0xFF08CB00).withValues(alpha: 0.3),
                                       blurRadius: 20,
                                       spreadRadius: 2,
                                     ),
@@ -649,7 +657,7 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                                       'DIVINE DECREE:',
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: Color(0xFF39FF14),
+                                        color: Color(0xFF08CB00),
                                         letterSpacing: 2,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -660,7 +668,7 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                                       style: const TextStyle(
                                         fontSize: 20,
                                         fontFamily: 'Courier',
-                                        color: Colors.white,
+                                        color: Color(0xFFEEEEEE),
                                         fontWeight: FontWeight.bold,
                                       ),
                                       textAlign: TextAlign.center,
@@ -679,8 +687,8 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                                       icon: const Icon(Icons.copy),
                                       label: const Text('Copy Flag'),
                                       style: OutlinedButton.styleFrom(
-                                        foregroundColor: const Color(0xFF39FF14),
-                                        side: const BorderSide(color: Color(0xFF39FF14)),
+                                        foregroundColor: const Color(0xFF08CB00),
+                                        side: const BorderSide(color: Color(0xFF08CB00)),
                                       ),
                                     ),
                                   ],
@@ -694,8 +702,8 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                                 icon: const Icon(Icons.arrow_back),
                                 label: const Text('Return to Mortal Realm'),
                                 style: OutlinedButton.styleFrom(
-                                  foregroundColor: const Color(0xFF39FF14),
-                                  side: const BorderSide(color: Color(0xFF39FF14)),
+                                  foregroundColor: const Color(0xFF08CB00),
+                                  side: const BorderSide(color: Color(0xFF08CB00)),
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 24,
                                     vertical: 12,
@@ -737,9 +745,9 @@ class StoryPage extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF0F172A),
-              Color(0xFF1E293B),
-              Color(0xFF334155),
+              Color(0xFF000000),
+              Color(0xFF253900),
+              Color(0xFF000000),
             ],
           ),
         ),
@@ -758,7 +766,7 @@ class StoryPage extends StatelessWidget {
                     Navigator.of(context).pop();
                   },
                   icon: const Icon(Icons.arrow_back),
-                  color: const Color(0xFF39FF14),
+                  color: const Color(0xFF08CB00),
                 ),
 
                 const SizedBox(height: 16),
@@ -769,7 +777,7 @@ class StoryPage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF39FF14),
+                    color: Color(0xFF08CB00),
                     letterSpacing: 1.5,
                   ),
                 ),
@@ -791,7 +799,7 @@ class StoryPage extends StatelessWidget {
                   'Can you gain access to the throne of Olympus?',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white70,
+                    color: Color(0xFFEEEEEE),
                     height: 1.8,
                   ),
                 ),
@@ -802,14 +810,14 @@ class StoryPage extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xFF39FF14)),
+                      border: Border.all(color: Color(0xFF08CB00)),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text(
                       'MEDUSA 2.0\n',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Color(0xFF39FF14),
+                        color: Color(0xFF08CB00),
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.2,
                       ),
