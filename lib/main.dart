@@ -195,10 +195,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       animation: _glowAnimation,
                       builder: (context, child) {
                         return Container(
-                          width: 200,
+                          width: 500,
                           height: 200,
                           decoration: BoxDecoration(
-                            shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
                                 color: const Color(0xFF39FF14).withOpacity(_glowAnimation.value * 0.5),
@@ -207,14 +206,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                               ),
                             ],
                           ),
-                          child: ClipOval(
-                            child: Container(
-                              color: Colors.black12,
-                              padding: const EdgeInsets.all(20),
-                              child: Image.asset(
-                                'assets/images/logo.png',
-                                fit: BoxFit.contain,
-                              ),
+                          child: Container(
+                            color: Colors.black12,
+                            padding: const EdgeInsets.all(20),
+                            child: Image.asset(
+                              'assets/images/logo.png',
+                              fit: BoxFit.contain,
                             ),
                           ),
                         );
@@ -279,7 +276,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             controller: _usernameController,
                             style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
-                              labelText: 'Username',
+                              labelText: 'Divine Name',
+                              hintText: 'Enter your immortal name...',
+                              hintStyle: const TextStyle(color: Colors.white30),
                               labelStyle: const TextStyle(color: Color(0xFF39FF14)),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(color: Color(0xFF39FF14)),
@@ -301,7 +300,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter username';
+                                return 'The gods require your name';
                               }
                               return null;
                             },
@@ -315,7 +314,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             obscureText: true,
                             style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
-                              labelText: 'Password',
+                              labelText: 'Sacred Key',
+                              hintText: 'Speak your secret words...',
+                              hintStyle: const TextStyle(color: Colors.white30),
                               labelStyle: const TextStyle(color: Color(0xFF39FF14)),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(color: Color(0xFF39FF14)),
@@ -337,7 +338,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter password';
+                                return 'The sacred key must not be empty';
                               }
                               return null;
                             },
@@ -362,8 +363,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                   SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      'Invalid credentials. Access denied.',
-                                      style: TextStyle(color: Colors.red),
+                                      'Medusa\'s gaze rejects false mortals...',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontStyle: FontStyle.italic,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -415,7 +419,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                         ),
                                       )
                                     : const Text(
-                                        'ACCESS SYSTEM',
+                                        'FACE THE GORGON',
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -537,7 +541,7 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                     child: Column(
                       children: [
                         const Text(
-                          'Access Granted!',
+                          'The Gorgon\'s Secret Revealed!',
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -549,10 +553,11 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                         const SizedBox(height: 16),
 
                         const Text(
-                          'You have successfully bypassed the Gorgon\'s gaze',
+                          'The immortals have spoken. You are worthy...',
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white70,
+                            fontStyle: FontStyle.italic,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -580,7 +585,7 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                           child: Column(
                             children: [
                               const Text(
-                                'YOUR FLAG:',
+                                'DIVINE DECREE:',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Color(0xFF39FF14),
@@ -611,7 +616,7 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                             Navigator.of(context).pop();
                           },
                           icon: const Icon(Icons.arrow_back),
-                          label: const Text('Return to Login'),
+                          label: const Text('Return to Mortal Realm'),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFF39FF14),
                             side: const BorderSide(color: Color(0xFF39FF14)),
