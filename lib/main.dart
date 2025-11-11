@@ -680,7 +680,7 @@ class StoryPage extends StatelessWidget {
 
                 // Title
                 const Text(
-                  'The Legend of Medusa',
+                  'The Legend',
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -693,20 +693,17 @@ class StoryPage extends StatelessWidget {
 
                 // Story content
                 const Text(
-                  'In the ancient myths of Greece, Medusa was one of the three Gorgon sisters. '
-                  'Once a beautiful maiden, she was transformed into a monster with living venomous '
-                  'snakes in place of hair.\n\n'
-                  'Her most fearsome power was her gaze - anyone who looked directly into her eyes '
-                  'would be instantly turned to stone. Warriors and heroes from across the land '
-                  'attempted to slay her, but all fell victim to her petrifying stare.\n\n'
-                  'The hero Perseus succeeded where others failed. Using his polished shield as a '
-                  'mirror, he avoided her direct gaze and struck her down, claiming her head as a '
-                  'trophy. Even in death, Medusa\'s head retained its power to turn those who gazed '
-                  'upon it to stone.\n\n'
-                  'Like Perseus, you must use cleverness and skill to overcome the challenges before '
-                  'you. The path to victory requires more than brute force - it demands wisdom, '
-                  'insight, and the ability to see what others cannot.\n\n'
-                  'Will you prove yourself worthy of passing the Gorgon\'s test?',
+                  'In Greek mythology, Zeus reigns as the king of all gods, wielder of thunder and lightning. '
+                  'He sits atop Mount Olympus, commanding the heavens and earth below.\n\n'
+                  'Zeus\'s power is absolute, but even the mighty king of gods has his secrets. '
+                  'To access his domain, one must first know how to address him properly.\n\n'
+                  'The ancient Greeks knew him by many names, but there is one that grants entry to his realm. '
+                  'Once you\'ve identified yourself correctly, you\'ll need to discover the key that unlocks his chamber.\n\n'
+                  'The answer lies hidden within his domain - perhaps in the sacred texts, the configuration scrolls, '
+                  'or among the artifacts left behind by those who served him.\n\n'
+                  'Search carefully through what Zeus has left behind. The key to his kingdom awaits those '
+                  'clever enough to look in the right places.\n\n'
+                  'Can you gain access to the throne of Olympus?',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white70,
@@ -724,7 +721,7 @@ class StoryPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text(
-                      'MEDUSA CTF 2.0\nAndroid Exploitation Challenge\nby kavix',
+                      'MEDUSA 2.0\n',
                       style: TextStyle(
                         fontSize: 14,
                         color: Color(0xFF39FF14),
