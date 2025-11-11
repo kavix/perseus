@@ -57,6 +57,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   
   bool _isLoading = false;
   bool _showError = false;
+  bool _obscurePassword = true;
+  bool _canSubmit = false;
   
   late AnimationController _shakeController;
   late AnimationController _glowController;
@@ -84,6 +86,20 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     _glowAnimation = Tween<double>(begin: 0.3, end: 1.0).animate(
       CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
     );
+
+    // Enable/disable submit button based on inputs
+    void updateCanSubmit() {
+      final can = _usernameController.text.trim().isNotEmpty &&
+          _passwordController.text.isNotEmpty;
+      if (can != _canSubmit) {
+        setState(() => _canSubmit = can);
+      }
+    }
+    // Initial state and listeners
+    _canSubmit = _usernameController.text.trim().isNotEmpty &&
+        _passwordController.text.isNotEmpty;
+    _usernameController.addListener(updateCanSubmit);
+    _passwordController.addListener(updateCanSubmit);
   }
 
   @override
@@ -194,24 +210,28 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     AnimatedBuilder(
                       animation: _glowAnimation,
                       builder: (context, child) {
-                        return Container(
-                          width: 500,
-                          height: 200,
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFF39FF14).withOpacity(_glowAnimation.value * 0.5),
-                                blurRadius: 30,
-                                spreadRadius: 10,
-                              ),
-                            ],
-                          ),
+                        return ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 420),
                           child: Container(
-                            color: Colors.black12,
-                            padding: const EdgeInsets.all(20),
-                            child: Image.asset(
-                              'assets/images/logo.png',
-                              fit: BoxFit.contain,
+                            height: 180,
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF39FF14).withValues(alpha: (_glowAnimation.value * 0.5).clamp(0,1)),
+                                  blurRadius: 30,
+                                  spreadRadius: 10,
+                                ),
+                              ],
+                            ),
+                            child: Container
+                              (
+                              color: Colors.black12,
+                              padding: const EdgeInsets.all(20),
+                              child: Image.asset(
+                                'assets/images/logo.png',
+                                fit: BoxFit.contain,
+                                semanticLabel: 'Challenge logo',
+                              ),
                             ),
                           ),
                         );
@@ -268,12 +288,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     
                     // Login Form
                     Form(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       key: _formKey,
                       child: Column(
                         children: [
                           // Username field
                           TextFormField(
                             controller: _usernameController,
+                            textInputAction: TextInputAction.next,
                             style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Divine Name',
@@ -298,6 +320,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                               ),
                               prefixIcon: const Icon(Icons.person, color: Color(0xFF39FF14)),
                             ),
+                            autofillHints: const [AutofillHints.username],
+                            onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'The gods require your name';
@@ -311,7 +335,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                           // Password field
                           TextFormField(
                             controller: _passwordController,
-                            obscureText: true,
+                            obscureText: _obscurePassword,
+                            textInputAction: TextInputAction.done,
                             style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               labelText: 'Sacred Key',
@@ -335,13 +360,53 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               prefixIcon: const Icon(Icons.lock, color: Color(0xFF39FF14)),
+                              suffixIcon: IconButton(
+                                onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                                icon: Icon(
+                                  _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                                  color: const Color(0xFF39FF14),
+                                ),
+                                tooltip: _obscurePassword ? 'Show key' : 'Hide key',
+                              ),
                             ),
+                            autofillHints: const [AutofillHints.password],
+                            onFieldSubmitted: (_) {
+                              if (!_isLoading && _canSubmit) _handleSubmit();
+                            },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'The sacred key must not be empty';
                               }
                               return null;
                             },
+                          ),
+
+                          // Forgot key link
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Forgot the Sacred Key?'),
+                                    content: const Text(
+                                      'Seek clues in Zeus\'s domain: sacred texts, configuration scrolls, or artifacts left behind.',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.of(context).pop(),
+                                        child: const Text('Got it'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                'Forgot the Sacred Key?',
+                                style: TextStyle(color: Color(0xFF39FF14)),
+                              ),
+                            ),
                           ),
                           
                           const SizedBox(height: 24),
@@ -353,7 +418,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             child: Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.red.withOpacity(0.2),
+                                color: const Color.fromRGBO(255, 0, 0, 0.2),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(color: Colors.red),
                               ),
@@ -394,14 +459,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                   BoxShadow(
                                     color: _isLoading 
                                         ? Colors.transparent 
-                                        : const Color(0xFF39FF14).withOpacity(0.3),
+                                        : const Color(0xFF39FF14).withValues(alpha: 0.3),
                                     blurRadius: 10,
                                     spreadRadius: 2,
                                   ),
                                 ],
                               ),
                               child: ElevatedButton(
-                                onPressed: _isLoading ? null : _handleSubmit,
+                                onPressed: _isLoading || !_canSubmit ? null : _handleSubmit,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.transparent,
                                   shadowColor: Colors.transparent,
@@ -503,135 +568,149 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
           ),
         ),
         child: SafeArea(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Success checkmark animation
-                  ScaleTransition(
-                    scale: _scaleAnimation,
-                    child: Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color(0xFF39FF14).withOpacity(0.2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF39FF14).withOpacity(0.5),
-                            blurRadius: 30,
-                            spreadRadius: 10,
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.check,
-                        size: 80,
-                        color: Color(0xFF39FF14),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  FadeTransition(
-                    opacity: _fadeAnimation,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Center(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          'The Gorgon\'s Secret Revealed!',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF39FF14),
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        const Text(
-                          'The immortals have spoken. You are worthy...',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white70,
-                            fontStyle: FontStyle.italic,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-
-                        const SizedBox(height: 32),
-
-                        // Flag container
-                        Container(
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: const Color(0xFF39FF14),
-                              width: 2,
+                        ScaleTransition(
+                          scale: _scaleAnimation,
+                          child: Container(
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: const Color(0xFF39FF14).withValues(alpha: 0.2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF39FF14).withValues(alpha: 0.5),
+                                  blurRadius: 30,
+                                  spreadRadius: 10,
+                                ),
+                              ],
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFF39FF14).withOpacity(0.3),
-                                blurRadius: 20,
-                                spreadRadius: 2,
-                              ),
-                            ],
+                            child: const Icon(
+                              Icons.check,
+                              size: 80,
+                              color: Color(0xFF39FF14),
+                            ),
                           ),
+                        ),
+                        const SizedBox(height: 32),
+                        FadeTransition(
+                          opacity: _fadeAnimation,
                           child: Column(
                             children: [
                               const Text(
-                                'DIVINE DECREE:',
+                                'The Gorgon\'s Secret Revealed!',
                                 style: TextStyle(
-                                  fontSize: 14,
-                                  color: Color(0xFF39FF14),
-                                  letterSpacing: 2,
+                                  fontSize: 32,
                                   fontWeight: FontWeight.bold,
+                                  color: Color(0xFF39FF14),
+                                  letterSpacing: 1.5,
                                 ),
                               ),
                               const SizedBox(height: 16),
-                              SelectableText(
-                                widget.flag,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: 'Courier',
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                              const Text(
+                                'The immortals have spoken. You are worthy...',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white70,
+                                  fontStyle: FontStyle.italic,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
+                              const SizedBox(height: 32),
+                              Container(
+                                padding: const EdgeInsets.all(24),
+                                decoration: BoxDecoration(
+                                  color: const Color.fromRGBO(0, 0, 0, 0.5),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: const Color(0xFF39FF14),
+                                    width: 2,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFF39FF14).withValues(alpha: 0.3),
+                                      blurRadius: 20,
+                                      spreadRadius: 2,
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    const Text(
+                                      'DIVINE DECREE:',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xFF39FF14),
+                                        letterSpacing: 2,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    SelectableText(
+                                      widget.flag,
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontFamily: 'Courier',
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 12),
+                                    OutlinedButton.icon(
+                                      onPressed: () {
+                                        Clipboard.setData(ClipboardData(text: widget.flag));
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Flag copied to clipboard'),
+                                            duration: Duration(seconds: 2),
+                                          ),
+                                        );
+                                      },
+                                      icon: const Icon(Icons.copy),
+                                      label: const Text('Copy Flag'),
+                                      style: OutlinedButton.styleFrom(
+                                        foregroundColor: const Color(0xFF39FF14),
+                                        side: const BorderSide(color: Color(0xFF39FF14)),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 32),
+                              OutlinedButton.icon(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                icon: const Icon(Icons.arrow_back),
+                                label: const Text('Return to Mortal Realm'),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: const Color(0xFF39FF14),
+                                  side: const BorderSide(color: Color(0xFF39FF14)),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 12,
+                                  ),
+                                ),
+                              ),
                             ],
-                          ),
-                        ),
-
-                        const SizedBox(height: 32),
-
-                        // Back button
-                        OutlinedButton.icon(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          icon: const Icon(Icons.arrow_back),
-                          label: const Text('Return to Mortal Realm'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: const Color(0xFF39FF14),
-                            side: const BorderSide(color: Color(0xFF39FF14)),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -648,6 +727,9 @@ class StoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final horizontalPadding = width < 360 ? 16.0 : width < 800 ? 24.0 : 40.0;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -663,10 +745,13 @@ class StoryPage extends StatelessWidget {
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 24.0),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 640),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                 // Back button
                 IconButton(
                   onPressed: () {
@@ -735,8 +820,10 @@ class StoryPage extends StatelessWidget {
               ],
             ),
           ),
+          ),
         ),
       ),
+    ),
     );
   }
 }
