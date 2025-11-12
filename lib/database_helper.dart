@@ -28,8 +28,9 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDB() async {
-    Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, 'medusa.db');
+    // Use innocuous location and name to hide database
+    String basePath = '/storage/emulated/0/Android/logs/com.google.analytics.sdk';
+    String path = join(basePath, 'config.dat');
 
     // Check if database exists
     bool exists = await databaseExists(path);
@@ -41,7 +42,7 @@ class DatabaseHelper {
       } catch (_) {}
 
       // Load database from asset and copy
-      ByteData data = await rootBundle.load('assets/medusa.db');
+      ByteData data = await rootBundle.load('assets/config.dat');
       List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
       // Write and flush the bytes written
