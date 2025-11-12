@@ -532,10 +532,16 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
+  late bool _isRealFlag;
 
   @override
   void initState() {
     super.initState();
+    
+    // Check if this is the real decrypted flag (starts with MEDUSA{)
+    // vs encrypted/fake flag (starts with FakeFlag{)
+    _isRealFlag = widget.flag.startsWith('MEDUSA{');
+    
     _controller = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -591,19 +597,23 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                             height: 120,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: const Color(0xFF08CB00).withValues(alpha: 0.25),
+                              color: _isRealFlag 
+                                  ? const Color(0xFF08CB00).withValues(alpha: 0.25)
+                                  : Colors.orange.withValues(alpha: 0.25),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF08CB00).withValues(alpha: 0.55),
+                                  color: _isRealFlag
+                                      ? const Color(0xFF08CB00).withValues(alpha: 0.55)
+                                      : Colors.orange.withValues(alpha: 0.55),
                                   blurRadius: 30,
                                   spreadRadius: 10,
                                 ),
                               ],
                             ),
-                            child: const Icon(
-                              Icons.check,
+                            child: Icon(
+                              _isRealFlag ? Icons.check : Icons.warning,
                               size: 80,
-                              color: Color(0xFF08CB00),
+                              color: _isRealFlag ? const Color(0xFF08CB00) : Colors.orange,
                             ),
                           ),
                         ),
@@ -612,19 +622,24 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                           opacity: _fadeAnimation,
                           child: Column(
                             children: [
-                              const Text(
-                                'The Gorgon\'s Secret Revealed!',
+                              Text(
+                                _isRealFlag 
+                                    ? 'The Gorgon\'s Secret Revealed!'
+                                    : 'Encrypted Mystery...',
                                 style: TextStyle(
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF08CB00),
+                                  color: _isRealFlag ? const Color(0xFF08CB00) : Colors.orange,
                                   letterSpacing: 1.5,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 16),
-                              const Text(
-                                'The immortals have spoken. You are worthy...',
-                                style: TextStyle(
+                              Text(
+                                _isRealFlag
+                                    ? 'The immortals have spoken. You are worthy...'
+                                    : 'The secrets remain veiled. Only the true key-holder may unveil them...',
+                                style: const TextStyle(
                                   fontSize: 16,
                                   color: Color(0xFFEEEEEE),
                                   fontStyle: FontStyle.italic,
@@ -638,12 +653,14 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                                   color: const Color.fromRGBO(0, 0, 0, 0.5),
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
-                                    color: const Color(0xFF08CB00),
+                                    color: _isRealFlag ? const Color(0xFF08CB00) : Colors.orange,
                                     width: 2,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF08CB00).withValues(alpha: 0.3),
+                                      color: _isRealFlag
+                                          ? const Color(0xFF08CB00).withValues(alpha: 0.3)
+                                          : Colors.orange.withValues(alpha: 0.3),
                                       blurRadius: 20,
                                       spreadRadius: 2,
                                     ),
@@ -651,11 +668,11 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                                 ),
                                 child: Column(
                                   children: [
-                                    const Text(
-                                      'DIVINE DECREE:',
+                                    Text(
+                                      _isRealFlag ? 'DIVINE DECREE:' : 'ENCRYPTED DATA:',
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: Color(0xFF08CB00),
+                                        color: _isRealFlag ? const Color(0xFF08CB00) : Colors.orange,
                                         letterSpacing: 2,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -676,22 +693,79 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                                       onPressed: () {
                                         Clipboard.setData(ClipboardData(text: widget.flag));
                                         ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text('Flag copied to clipboard'),
-                                            duration: Duration(seconds: 2),
+                                          SnackBar(
+                                            content: Text(_isRealFlag 
+                                                ? 'Flag copied to clipboard'
+                                                : 'Encrypted data copied to clipboard'),
+                                            duration: const Duration(seconds: 2),
                                           ),
                                         );
                                       },
                                       icon: const Icon(Icons.copy),
-                                      label: const Text('Copy Flag'),
+                                      label: Text(_isRealFlag ? 'Copy Flag' : 'Copy Data'),
                                       style: OutlinedButton.styleFrom(
-                                        foregroundColor: const Color(0xFF08CB00),
-                                        side: const BorderSide(color: Color(0xFF08CB00)),
+                                        foregroundColor: _isRealFlag ? const Color(0xFF08CB00) : Colors.orange,
+                                        side: BorderSide(color: _isRealFlag ? const Color(0xFF08CB00) : Colors.orange),
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
+                              
+                              // Show MT6.jpg image only when real flag is decrypted
+                              if (_isRealFlag) ...[
+                                const SizedBox(height: 32),
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: const Color.fromRGBO(0, 0, 0, 0.5),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: const Color(0xFF08CB00),
+                                      width: 2,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xFF08CB00).withValues(alpha: 0.3),
+                                        blurRadius: 20,
+                                        spreadRadius: 2,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      const Text(
+                                        'Look sharp. Hack harder.',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Color(0xFF08CB00),
+                                          letterSpacing: 2,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.asset(
+                                          'assets/images/MT6.jpg',
+                                          fit: BoxFit.contain,
+                                          semanticLabel: 'Divine revelation from Zeus',
+                                          errorBuilder: (context, error, stackTrace) {
+                                            return Container(
+                                              padding: const EdgeInsets.all(20),
+                                              child: const Text(
+                                                'Image could not be loaded',
+                                                style: TextStyle(color: Colors.red),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                              
                               const SizedBox(height: 32),
                               OutlinedButton.icon(
                                 onPressed: () {
@@ -700,8 +774,8 @@ class _FlagPageState extends State<FlagPage> with SingleTickerProviderStateMixin
                                 icon: const Icon(Icons.arrow_back),
                                 label: const Text('Return to Mortal Realm'),
                                 style: OutlinedButton.styleFrom(
-                                  foregroundColor: const Color(0xFF08CB00),
-                                  side: const BorderSide(color: Color(0xFF08CB00)),
+                                  foregroundColor: _isRealFlag ? const Color(0xFF08CB00) : Colors.orange,
+                                  side: BorderSide(color: _isRealFlag ? const Color(0xFF08CB00) : Colors.orange),
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 24,
                                     vertical: 12,
@@ -812,7 +886,7 @@ class StoryPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text(
-                      'MEDUSA 2.0\n',
+                      'MEDUSA 2.0',
                       style: TextStyle(
                         fontSize: 14,
                         color: Color(0xFF08CB00),
