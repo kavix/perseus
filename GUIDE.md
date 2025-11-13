@@ -1,5 +1,10 @@
 # Perseus CTF Challenge - Solver Guide
 
+
+flutter build apk --debug
+
+
+
 ## Challenge Overview
 **Perseus** is an Android CTF challenge that combines multiple techniques:
 - Android app reverse engineering
