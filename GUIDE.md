@@ -1,9 +1,6 @@
 # Perseus CTF Challenge - Solver Guide
 
-
 flutter build apk --debug
-
-
 
 ## Challenge Overview
 **Perseus** is an Android CTF challenge that combines multiple techniques:
@@ -133,7 +130,19 @@ print(f"Flag: {flag}")
 
 ### Method 2: APK Decompilation
 
-#### Step 1: Decompile the APK
+#### Step 1: Verify APK Signature (Optional)
+```bash
+# View APK certificate information
+keytool -printcert -jarfile perseus.apk
+
+# Or use apksigner (part of Android SDK build-tools)
+apksigner verify --print-certs perseus.apk
+
+# Check if APK is signed
+jarsigner -verify -verbose -certs perseus.apk
+```
+
+#### Step 2: Decompile the APK
 ```bash
 # Using apktool
 apktool d perseus.apk -o perseus_decompiled
@@ -142,7 +151,19 @@ apktool d perseus.apk -o perseus_decompiled
 jadx perseus.apk -d perseus_jadx
 ```
 
-#### Step 2: Extract Encrypted Database
+#### Step 3: Inspect APK Metadata
+```bash
+# Using aapt (Android Asset Packaging Tool)
+aapt dump badging perseus.apk | grep -E "package:|sdkVersion:|targetSdk"
+
+# List all files in APK
+aapt list -v perseus.apk
+
+# Extract specific file from APK
+unzip perseus.apk assets/config.enc
+```
+
+#### Step 4: Extract Encrypted Database
 The database is stored as `assets/config.enc` (encrypted).
 
 ```bash
@@ -151,7 +172,7 @@ ls -la
 # You'll find config.enc
 ```
 
-#### Step 3: Decrypt the Database
+#### Step 5: Decrypt the Database
 Look for the decryption key in the source code (`database_helper.dart`):
 
 ```python
@@ -173,14 +194,88 @@ KEY = 'medusa_ctf_2024_key'
 decrypt_database('config.enc', 'config.db', KEY)
 ```
 
-#### Step 4: Query the Database
+#### Step 6: Query the Database
 ```bash
 sqlite3 config.db "SELECT * FROM credentials;"
 ```
 
 ---
 
-### Method 3: Dynamic Analysis with Frida
+### Method 4: Make APK Debuggable (Advanced)
+
+If you need to use `run-as` to access internal app data but only have the release APK, you can modify it to be debuggable.
+
+#### Step 1: Decompile the APK
+```bash
+apktool d perseus.apk -o perseus_modified
+```
+
+#### Step 2: Modify AndroidManifest.xml
+```bash
+cd perseus_modified
+nano AndroidManifest.xml
+
+# Add android:debuggable="true" to the <application> tag
+# Change from:
+<application android:label="perseus" ...>
+
+# To:
+<application android:debuggable="true" android:label="perseus" ...>
+```
+
+#### Step 3: Rebuild the APK
+```bash
+cd ..
+apktool b perseus_modified -o perseus-debug.apk
+```
+
+#### Step 4: Sign the APK
+```bash
+# Generate a keystore (first time only)
+keytool -genkey -v -keystore debug.keystore -alias debugkey \
+  -keyalg RSA -keysize 2048 -validity 10000 \
+  -storepass android -keypass android \
+  -dname "CN=Debug,O=CTF,C=US"
+
+# Sign the APK
+apksigner sign --ks debug.keystore \
+  --ks-key-alias debugkey \
+  --ks-pass pass:android \
+  --key-pass pass:android \
+  --out perseus-debug-signed.apk \
+  perseus-debug.apk
+
+# Or use jarsigner (older method)
+jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+  -keystore debug.keystore \
+  -storepass android \
+  perseus-debug.apk debugkey
+
+# Verify signature
+apksigner verify perseus-debug-signed.apk
+```
+
+#### Step 5: Install and Use
+```bash
+# Uninstall original app first
+adb uninstall com.example.perseus
+
+# Install modified app
+adb install perseus-debug-signed.apk
+
+# Now run-as will work
+adb shell
+run-as com.example.perseus
+cd /data/data/com.example.perseus
+ls -la
+cat shared_prefs/FlutterSharedPreferences.xml
+```
+
+**Note:** This method allows access to `/data/data/` without root, but requires understanding of APK modification and signing.
+
+---
+
+## Method 5: Runtime Manipulation with Frida
 
 #### Step 1: Hook Database Operations
 ```javascript
@@ -273,12 +368,89 @@ echo "ODowMCBBTSBPbndhcmQ=" | base64 -d
 
 ## Tools Required
 
+### Essential Tools
 - **ADB (Android Debug Bridge)**: Device interaction
 - **SQLite3**: Database analysis
 - **Python 3**: Decryption scripts
-- **apktool**: APK decompilation (optional)
-- **jadx**: Java decompilation (optional)
-- **Frida**: Dynamic analysis (optional)
+- **Base64**: Decode encoded strings
+
+### APK Analysis Tools
+- **apktool**: APK decompilation and rebuild
+  ```bash
+  # macOS
+  brew install apktool
+  
+  # Linux
+  sudo apt-get install apktool
+  
+  # Usage
+  apktool d app.apk -o output_folder
+  ```
+
+- **jadx**: Dex to Java decompiler
+  ```bash
+  # macOS
+  brew install jadx
+  
+  # Download from: https://github.com/skylot/jadx/releases
+  
+  # Usage
+  jadx app.apk -d output_folder
+  jadx-gui app.apk  # GUI version
+  ```
+
+- **keytool**: Java keystore and certificate tool (comes with JDK)
+  ```bash
+  # View APK signature
+  keytool -printcert -jarfile app.apk
+  
+  # List keystore contents
+  keytool -list -v -keystore keystore.jks
+  ```
+
+- **apksigner**: APK signing and verification (Android SDK build-tools)
+  ```bash
+  # Verify APK signature
+  apksigner verify --print-certs app.apk
+  
+  # Check if APK is signed
+  apksigner verify app.apk
+  
+  # Sign APK
+  apksigner sign --ks keystore.jks app.apk
+  ```
+
+- **aapt / aapt2**: Android Asset Packaging Tool
+  ```bash
+  # Dump APK info
+  aapt dump badging app.apk
+  
+  # List APK contents
+  aapt list -v app.apk
+  ```
+
+- **jarsigner**: JAR signing and verification (comes with JDK)
+  ```bash
+  # Verify APK signature
+  jarsigner -verify -verbose -certs app.apk
+  ```
+
+### Advanced Tools (Optional)
+- **Frida**: Dynamic instrumentation
+  ```bash
+  pip3 install frida-tools
+  ```
+
+- **objection**: Frida-based mobile exploration toolkit
+  ```bash
+  pip3 install objection
+  ```
+
+- **MobSF**: Mobile Security Framework (automated analysis)
+  - https://github.com/MobSF/Mobile-Security-Framework-MobSF
+
+- **Bytecode Viewer**: All-in-one reverse engineering tool
+  - https://github.com/Konloch/bytecode-viewer
 
 ---
 
@@ -337,7 +509,41 @@ The exact flag is obtained by:
 
 ## Additional Resources
 
+### Official Documentation
 - [Android Debug Bridge (ADB) Documentation](https://developer.android.com/tools/adb)
+- [apksigner Documentation](https://developer.android.com/tools/apksigner)
+- [keytool Documentation](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/keytool.html)
 - [SQLite Tutorial](https://www.sqlitetutorial.net/)
+
+### Reverse Engineering Tools
+- [apktool](https://apktool.org/) - APK decompilation
+- [jadx](https://github.com/skylot/jadx) - Dex to Java decompiler
 - [Frida Dynamic Instrumentation](https://frida.re/)
+- [objection](https://github.com/sensepost/objection) - Frida toolkit
+
+### Learning Resources
 - [APK Reverse Engineering Guide](https://github.com/ashishb/android-security-awesome)
+- [OWASP Mobile Security Testing Guide](https://owasp.org/www-project-mobile-security-testing-guide/)
+- [Android App Reverse Engineering 101](https://www.ragingrock.com/AndroidAppRE/)
+
+### APK Analysis Cheat Sheets
+```bash
+# Quick APK Information
+unzip -l app.apk                    # List files in APK
+aapt dump badging app.apk           # Get app metadata
+aapt dump permissions app.apk       # List permissions
+keytool -printcert -jarfile app.apk # Certificate info
+apksigner verify --print-certs app.apk # Verify signature
+
+# Extract Assets
+unzip app.apk -d extracted/         # Extract all
+unzip app.apk assets/* -d assets/   # Extract assets only
+
+# Decompile
+apktool d app.apk                   # Decompile to smali
+jadx app.apk                        # Decompile to Java
+
+# Recompile (if needed)
+apktool b app_folder -o new.apk     # Rebuild APK
+apksigner sign --ks key.jks new.apk # Re-sign APK
+```
