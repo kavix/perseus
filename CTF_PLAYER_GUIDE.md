@@ -30,10 +30,11 @@
 
 #### 2. **Android Device or Emulator**
 - **Minimum Requirements:**
-  - Android Version: **5.0 (Lollipop)** or higher (API Level 21+)
+  - **Android Version: 5.0 (Lollipop) or higher (API Level 21+)** ⚠️ REQUIRED
   - Recommended: **Android 9.0 (Pie)** or higher (API Level 28+)
   - Architecture: ARM, ARM64, or x86_64
   - Storage: At least 200MB free space
+  - RAM: 2GB minimum, 4GB recommended
 
 - **Option A: Physical Android Device**
   - Enable USB Debugging:
@@ -191,9 +192,11 @@ exit
 
 ### Application Details
 - **Package Name:** `com.example.perseus`
+- **Minimum Android Version:** 5.0 Lollipop (API Level 21) ⚠️
 - **Target SDK:** 34 (Android 14)
-- **Min SDK:** 21 (Android 5.0)
+- **Compile SDK:** 34
 - **APK Size:** ~20-25 MB (release build)
+- **Permissions Required:** READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
 
 ### Data Locations
 The app stores data in multiple locations:
