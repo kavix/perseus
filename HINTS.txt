@@ -1,0 +1,122 @@
+    # Perseus Challenge - Hints
+
+## Hint System
+
+Hints should be revealed progressively with increasing point costs.
+
+---
+
+### Hint 1 (Free / 0 Points)
+**Category:** General Direction
+
+> "Android applications can store data in multiple locations. Use ADB (Android Debug Bridge) to explore the device filesystem. Remember: not all storage requires root access!"
+
+---
+
+### Hint 2 (50 Points)
+**Category:** Storage Location
+
+> "Focus on external storage rather than internal app data. The path you're looking for starts with: `/storage/emulated/0/Android/data/`"
+
+---
+
+### Hint 3 (100 Points)
+**Category:** File Type
+
+> "You're looking for a SQLite database file (.db extension). Use the `find` command to search for it. The database is hidden in a directory with a misleading name - think 'analytics' or 'logs'."
+
+**Command hint:**
+```bash
+find /storage/emulated/0/Android/data/com.example.perseus -name "*.db"
+```
+
+---
+
+### Hint 4 (150 Points)
+**Category:** Exact Location
+
+> "The database is located at:
+> `/storage/emulated/0/Android/data/com.example.perseus/files/logs/com.ecsc-uok.medusa.kavix/config.db`
+> 
+> Extract it using:
+> ```bash
+> adb pull /storage/emulated/0/Android/data/com.example.perseus/files/logs/com.ecsc-uok.medusa.kavix/config.db
+> ```"
+
+---
+
+### Hint 5 (200 Points)
+**Category:** Database Contents
+
+> "Open the database with SQLite and query the credentials table:
+> ```bash
+> sqlite3 config.db
+> SELECT * FROM credentials;
+> ```
+> You'll find username and password there."
+
+---
+
+### Hint 6 (250 Points)
+**Category:** Flag Decryption
+
+> "The flag is encrypted in the app's source code using XOR encryption. The key is SHA-256(username + password). You'll need to decompile the APK to find the encrypted flag bytes."
+
+---
+
+### Hint 7 (300 Points - Almost Complete Solution)
+**Category:** Decryption Script
+
+> "Use this Python script to decrypt the flag:
+> ```python
+> import hashlib
+> 
+> username = "[FIND_IN_DB]"
+> password = "[FIND_IN_DB]"
+> 
+> key = hashlib.sha256((username + password).encode()).digest()
+> 
+> encrypted = [
+>     # Find these bytes in database_helper.dart
+>     0xcf, 0xfc, 0xa8, 0xab, ...
+> ]
+> 
+> flag = bytes([encrypted[i] ^ key[i % len(key)] for i in range(len(encrypted))])
+> print(flag.decode())
+> ```"
+
+---
+
+## Bonus Hints (For SharedPreferences Side Quest)
+
+### Bonus Hint 1 (25 Points)
+> "The app stores additional event information in SharedPreferences. Look in `/data/data/com.example.perseus/shared_prefs/` (requires root or run-as)"
+
+### Bonus Hint 2 (50 Points)
+> "The SharedPreferences values are Base64 encoded. Decode them to find event details about venue, date, and time."
+
+---
+
+## Hint Release Strategy
+
+**Recommended approach:**
+
+1. **First 30 minutes:** No hints (let teams explore)
+2. **After 30 min:** Release Hint 1 (free)
+3. **After 1 hour:** Release Hints 2-3 (with costs)
+4. **After 2 hours:** Release Hints 4-5 (higher costs)
+5. **Last 30 min:** Release all hints (reduced costs or free)
+
+**Point deduction:**
+- Subtract hint cost from team's final score for this challenge
+- Example: 500 point challenge - 150 points in hints = 350 final points
+
+---
+
+## Alternative Hint Delivery Methods
+
+1. **Discord Bot:** Automated hint system via Discord commands
+2. **CTF Platform:** Built-in hint system (CTFd, rCTF)
+3. **In-App:** Hidden "Developer Options" menu with hints
+4. **QR Code:** Physical QR codes at the event location with hints
+5. **Time-Released:** Hints appear automatically after certain time intervals
