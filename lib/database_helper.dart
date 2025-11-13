@@ -29,20 +29,23 @@ class DatabaseHelper {
 
   Future<Database> _initDB() async {
     // Use innocuous location and name to hide database
-    String basePath = '/storage/emulated/0/Android/logs/com.google.analytics.sdk';
-    String path = join(basePath, 'config.dat');
+    // Use app's external storage directory with fake analytics path
+    Directory? externalDir = await getExternalStorageDirectory();
+    String basePath = join(externalDir!.path, 'logs', 'com.google.analytics.sdk');
+    String path = join(basePath, 'config.db');
 
     // Check if database exists
     bool exists = await databaseExists(path);
 
     if (!exists) {
-      // Copy from assets
-      try {
-        await Directory(dirname(path)).create(recursive: true);
-      } catch (_) {}
+      // Create the full directory structure
+      Directory directory = Directory(basePath);
+      if (!await directory.exists()) {
+        await directory.create(recursive: true);
+      }
 
       // Load database from asset and copy
-      ByteData data = await rootBundle.load('assets/config.dat');
+      ByteData data = await rootBundle.load('assets/config.db');
       List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
       // Write and flush the bytes written
