@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'database_helper.dart';
+import 'event_prefs.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Save event information to SharedPreferences
+  await EventPrefs.saveEventInfo();
   
   // Enable immersive full-screen mode
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);

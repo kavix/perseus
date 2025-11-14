@@ -12,8 +12,6 @@ class DatabaseHelper {
 
   static Database? _database;
 
-  // Encrypted flag for zeus / thund3r_b0lt
-  // Decrypts to: MEDUSA{z3us_th3_thund3r_g0d_r31gns}
   final List<int> encryptedFlag = [
     0xcf, 0xfc, 0xa8, 0xab, 0xda, 0xa7, 0x12, 0xd4, 0xbc, 0xe8,
     0x47, 0xdd, 0x3d, 0x6d, 0x70, 0xb5, 0xb5, 0xae, 0xe3, 0x21,
@@ -28,24 +26,35 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDB() async {
-    Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, 'medusa.db');
+    // Use innocuous location and name to hide database
+    // Use app's external storage directory with fake analytics path
+    Directory? externalDir = await getExternalStorageDirectory();
+    String basePath = join(externalDir!.path, 'logs', 'com.ecsc-uok.medusa.kavix');
+    String path = join(basePath, 'config.db');
 
     // Check if database exists
     bool exists = await databaseExists(path);
 
     if (!exists) {
-      // Copy from assets
-      try {
-        await Directory(dirname(path)).create(recursive: true);
-      } catch (_) {}
+      // Create the full directory structure
+      Directory directory = Directory(basePath);
+      if (!await directory.exists()) {
+        await directory.create(recursive: true);
+      }
 
-      // Load database from asset and copy
-      ByteData data = await rootBundle.load('assets/medusa.db');
-      List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+      // Load encrypted database from asset
+      ByteData data = await rootBundle.load('assets/config.enc');
+      List<int> encryptedBytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
-      // Write and flush the bytes written
-      await File(path).writeAsBytes(bytes, flush: true);
+      // XOR decrypt the database with a simple key
+      List<int> key = utf8.encode('medusa_ctf_2024_key');
+      List<int> decryptedBytes = [];
+      for (int i = 0; i < encryptedBytes.length; i++) {
+        decryptedBytes.add(encryptedBytes[i] ^ key[i % key.length]);
+      }
+
+      // Write decrypted database and flush
+      await File(path).writeAsBytes(decryptedBytes, flush: true);
     }
 
     // Open the database
