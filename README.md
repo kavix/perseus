@@ -576,6 +576,6 @@ This project serves as an excellent resource for learning:
 
 ---
 
-**Made with ❤️ for the MEDUSA CTF Community**
+**Made with ❤️ for the MEDUSA 2.0**
 
 [Back to Top](#-perseus---android-ctf-challenge)
