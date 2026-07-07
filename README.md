@@ -552,7 +552,7 @@ APK Size: 20-25 MB
 
 ## 🎓 Educational Value
 
-This project serves as an excellent resource for learning:
+This project serves as an excellent resource for learning
 
 ✅ Android app development with Flutter
 ✅ Mobile security and forensics
